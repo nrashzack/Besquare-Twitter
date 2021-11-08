@@ -1,20 +1,60 @@
 // ignore_for_file: deprecated_member_use, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:mobile_final/pages/home.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class CreatePost extends StatefulWidget {
-  const CreatePost({Key? key}) : super(key: key);
+  CreatePost({required this.Createchannel, Key? key}) : super(key: key);
 
-  @override
-  _CreatePostState createState() => _CreatePostState();
+  WebSocketChannel Createchannel;
+
+  State<StatefulWidget> createState() {
+    return _CreatePostState(this.Createchannel);
+  }
 }
 
 class _CreatePostState extends State<CreatePost> {
+  _CreatePostState(this.Createchannel);
+  WebSocketChannel Createchannel;
+
   String text = '';
   final input1 = TextEditingController();
   final input2 = TextEditingController();
   final input3 = TextEditingController();
   List<String> messageList = [];
+  bool postValid = false;
+
+  void inputPosts() {
+    setState(() {
+      if (input1.text.isNotEmpty) {
+        postValid = true;
+      } else {
+        postValid = false;
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    input1.addListener(inputPosts);
+    input2.addListener(inputPosts);
+    input3.addListener(inputPosts);
+    super.initState();
+  }
+
+  void createPosts() {
+    Createchannel.sink.add(
+        '{"type": "create_post","data": {"title": "${input1.text}", "description": "${input2.text}","image": "${input3.text}"}}');
+    input1.clear();
+    input2.clear();
+    input3.clear();
+    _toHome();
+  }
+
+  void _toHome() {
+    Navigator.pop(context);
+  }
 
   @override
   void dispose() {
@@ -39,29 +79,37 @@ class _CreatePostState extends State<CreatePost> {
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         actions: <Widget>[
-          TextButton(
-            child: Text('Post'),
-            onPressed: () {
-              if (input1.text.isNotEmpty &&
-                  input2.text.isNotEmpty &&
-                  input3.text.isNotEmpty) {
-                print(input1.text);
-                messageList.add(input1.text);
-                input1.text = '';
-                print(input2.text);
-                messageList.add(input2.text);
-                input2.text = '';
-                print(input3.text);
-                messageList.add(input3.text);
-                input3.text = '';
-              } else {
-                null;
-              }
-            },
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.only(right: 20),
-              primary: Colors.white,
-              textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          Padding(
+            padding: EdgeInsets.only(top: 5, right: 10, bottom: 5),
+            child: ElevatedButton(
+              child: Text('Post'),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.teal[900],
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                    ),
+                textStyle: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    color: Colors.white),
+              ),
+              onPressed: postValid
+                  ? () {
+                      createPosts();
+
+                      final snackBar = SnackBar(
+                        content: const Text(
+                          'Posted!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(height: 1, fontSize: 17),
+                        ),
+                        backgroundColor: (Colors.blueGrey),
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                  : null,
             ),
           ),
         ],
@@ -176,5 +224,4 @@ class _CreatePostState extends State<CreatePost> {
       ]),
     );
   }
-
 }

@@ -1,9 +1,8 @@
 // ignore_for_file: deprecated_member_use, prefer_const_constructors, use_key_in_widget_constructors, sized_box_for_whitespace
 import 'package:flutter/material.dart';
+import 'package:mobile_final/pages/splash.dart';
 import 'home.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/status.dart' as status;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -12,7 +11,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final channel =
-      IOWebSocketChannel.connect('ws://besquare-demo.herokuapp.com');
+      WebSocketChannel.connect(Uri.parse('ws://besquare-demo.herokuapp.com'));
 
   final controllerName = TextEditingController();
   bool signin = false;
@@ -33,11 +32,22 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  void _signIn() {
+    if (controllerName.text.isNotEmpty) {
+      channel.sink.add(
+          '{"type": "sign_in","data": {"name": "${controllerName.text}"}}');
+      print('${controllerName.text} sign in success');
+      controllerName.clear();
+    }
+  }
+
   @override
   void dispose() {
     controllerName.dispose();
     super.dispose();
   }
+
+  final List<String> list = [];
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +60,8 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SplashScreen()));
           },
           icon: Icon(
             Icons.arrow_back_ios_new,
@@ -109,7 +120,6 @@ class _LoginPageState extends State<LoginPage> {
                           left: BorderSide(color: Colors.black),
                           right: BorderSide(color: Colors.black),
                         )),
-
                     child: ElevatedButton(
                       child: Text('Login'),
                       style: ElevatedButton.styleFrom(
@@ -117,37 +127,38 @@ class _LoginPageState extends State<LoginPage> {
                         elevation: 0,
                         fixedSize: const Size(300, 60),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50)),
-                          textStyle: TextStyle(
+                            borderRadius: BorderRadius.circular(50)),
+                        textStyle: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 18,
                             color: Colors.white),
-                            
                       ),
-                      onPressed: !signin
-                          ? null
-                          : () {
+                      onPressed: signin
+                          ? () {
+                              _signIn();
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Home()));
-
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Home(Homechannel: channel)),
+                              );
+      
                               final snackBar = SnackBar(
                                 content: const Text(
                                   'You have successfully login!',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(height: 0.9, fontSize: 15),
+                                  style: TextStyle(height: 1, fontSize: 17),
                                 ),
                                 backgroundColor: (Colors.blueGrey),
                               );
-
+      
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
-                            },
-                      ),
+                            }
+                          : null,
                     ),
                   ),
-                
+                ),
               ],
             ),
             Container(

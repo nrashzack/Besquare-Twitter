@@ -20,7 +20,6 @@ class SplashScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Column(
-                
                 children: <Widget>[
                   Text(
                     "Welcome!",
