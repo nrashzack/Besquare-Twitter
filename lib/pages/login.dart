@@ -51,6 +51,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    String user = controllerName.text;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
@@ -140,9 +141,9 @@ class _LoginPageState extends State<LoginPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        Home(Homechannel: channel)),
+                                        Home(Homechannel: channel, username:user)),
                               );
-      
+
                               final snackBar = SnackBar(
                                 content: const Text(
                                   'You have successfully login!',
@@ -151,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 backgroundColor: (Colors.blueGrey),
                               );
-      
+
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
                             }

@@ -10,22 +10,24 @@ import 'package:mobile_final/pages/postdetail.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Home extends StatefulWidget {
-  Home({required this.Homechannel, Key? key}) : super(key: key);
+  Home({required this.Homechannel,required this.username, Key? key}) : super(key: key);
 
   WebSocketChannel Homechannel;
+  String username;
 
   State<StatefulWidget> createState() {
-    return _HomeState(this.Homechannel);
+    return _HomeState(this.Homechannel, this.username);
   }
 }
 
 class _HomeState extends State<Home> {
-  _HomeState(this.Homechannel);
+  _HomeState(this.Homechannel, this.username);
   WebSocketChannel Homechannel;
   List posts = [];
   List favPosts = [];
   List detail = [];
   bool favonpressed = false;
+  String username;
 
   dynamic decodedMessage;
 
@@ -124,7 +126,9 @@ class _HomeState extends State<Home> {
                                                   color: Colors.black,
                                                 ),
                                                 title: Text(
-                                                  "@" + posts[reversedIndex]["author"],
+                                                  "@" +
+                                                      posts[reversedIndex]
+                                                          ["author"],
                                                   style: TextStyle(
                                                       fontSize: 20,
                                                       fontWeight:
@@ -172,7 +176,8 @@ class _HomeState extends State<Home> {
                                                     MainAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    posts[reversedIndex]["date"],
+                                                    posts[reversedIndex]
+                                                        ["date"],
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         fontStyle:
@@ -194,15 +199,14 @@ class _HomeState extends State<Home> {
                                                           posts[reversedIndex])
                                                       ? () {
                                                           setState(() {
-                                                            favPosts.remove(
-                                                                posts[
-                                                                    reversedIndex]);
+                                                            favPosts.remove(posts[
+                                                                reversedIndex]);
                                                           });
                                                         }
                                                       : () {
                                                           setState(() {
-                                                            favPosts.add(
-                                                                posts[reversedIndex]);
+                                                            favPosts.add(posts[
+                                                                reversedIndex]);
                                                           });
                                                         },
                                                   icon: favPosts.contains(
@@ -215,20 +219,28 @@ class _HomeState extends State<Home> {
                                                 ),
                                               ),
                                               Positioned(
-                                                child: IconButton(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 20, top: 20),
-                                                    onPressed: () {
-                                                      String remove =
-                                                          posts[reversedIndex]["_id"];
-                                                      Homechannel.sink.add(
-                                                          '{"type": "delete_post","data": {"postId": "$remove"}}');
-                                                    },
-                                                    icon: const Icon(
-                                                      Icons.delete_sharp,
-                                                      size: 22,
-                                                    )),
+                                                child: 
+                                                 ButtonBar(
+                                                   children: [ 
+                                                     username == posts[reversedIndex]["author"]
+                                            ? IconButton(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 20, top: 20),
+                                                      onPressed: () {
+                                                        String remove =posts[reversedIndex]["_id"];
+                                                        Homechannel.sink.add('{"type": "delete_post","data": {"postId": "$remove"}}');
+                                                      },
+                                                      
+                                                      icon: const Icon(
+                                                        Icons.delete_sharp,
+                                                        size: 22,
+                                                      ))
+                                            : SizedBox(
+                                                width: 10,
+                                              ),
+                                                   ]),
+                                                    
                                               ),
                                               Padding(
                                                 padding:
@@ -258,7 +270,8 @@ class _HomeState extends State<Home> {
                                       builder: (context) => PostDetails(
                                           image: posts[reversedIndex]["image"],
                                           name: posts[reversedIndex]["author"],
-                                          desc: posts[reversedIndex]["description"],
+                                          desc: posts[reversedIndex]
+                                              ["description"],
                                           title: posts[reversedIndex]["title"],
                                           date: posts[reversedIndex]["date"])),
                                 );
