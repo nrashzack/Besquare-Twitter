@@ -10,7 +10,8 @@ import 'package:mobile_final/pages/postdetail.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Home extends StatefulWidget {
-  Home({required this.Homechannel,required this.username, Key? key}) : super(key: key);
+  Home({required this.Homechannel, required this.username, Key? key})
+      : super(key: key);
 
   WebSocketChannel Homechannel;
   String username;
@@ -219,28 +220,31 @@ class _HomeState extends State<Home> {
                                                 ),
                                               ),
                                               Positioned(
-                                                child: 
-                                                 ButtonBar(
-                                                   children: [ 
-                                                     username == posts[reversedIndex]["author"]
-                                            ? IconButton(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 20, top: 20),
-                                                      onPressed: () {
-                                                        String remove =posts[reversedIndex]["_id"];
-                                                        Homechannel.sink.add('{"type": "delete_post","data": {"postId": "$remove"}}');
-                                                      },
-                                                      
-                                                      icon: const Icon(
-                                                        Icons.delete_sharp,
-                                                        size: 22,
-                                                      ))
-                                            : SizedBox(
-                                                width: 10,
-                                              ),
-                                                   ]),
-                                                    
+                                                child: ButtonBar(children: [
+                                                  username ==
+                                                          posts[reversedIndex]
+                                                              ["author"]
+                                                      ? IconButton(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  left: 20,
+                                                                  top: 20),
+                                                          onPressed: () {
+                                                            String remove =
+                                                                posts[reversedIndex]
+                                                                    ["_id"];
+                                                            Homechannel.sink.add(
+                                                                '{"type": "delete_post","data": {"postId": "$remove"}}');
+                                                          },
+                                                          icon: const Icon(
+                                                            Icons.delete_sharp,
+                                                            size: 22,
+                                                          ))
+                                                      : SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                ]),
                                               ),
                                               Padding(
                                                 padding:
